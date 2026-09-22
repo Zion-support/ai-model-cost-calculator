@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Model Cost Calculator — Zion Tech Group</title>
+<meta name="description" content="Compare AI model pricing across OpenAI, Claude, Gemini, Llama, Mistral. Token costs, API pricing, and total cost of ownership calculator.">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e0e0e0; padding: 2rem; max-width: 900px; margin: 0 auto; }
+h1 { color: #00d4ff; margin-bottom: 0.5rem; }
+h2 { color: #8b8b8b; margin: 1.5rem 0 0.5rem; }
+.subtitle { color: #888; margin-bottom: 2rem; }
+.card { background: #141414; border: 1px solid #222; border-radius: 12px; padding: 1.5rem; margin: 1rem 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0; }
+.input-group { margin: 0.5rem 0; }
+label { display: block; color: #aaa; font-size: 0.85rem; margin-bottom: 0.25rem; }
+input, select { width: 100%; padding: 0.5rem; background: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: #fff; font-size: 1rem; }
+button { background: #00d4ff; color: #000; border: none; padding: 0.75rem 2rem; border-radius: 8px; font-size: 1rem; cursor: pointer; font-weight: 600; margin: 1rem 0.5rem 0 0; }
+button:hover { background: #00b8e6; }
+.result { background: #0d2818; border: 1px solid #00d4ff; border-radius: 12px; padding: 1.5rem; margin: 1rem 0; }
+.result h3 { color: #00d4ff; margin-bottom: 0.5rem; }
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+th, td { text-align: left; padding: 0.75rem; border-bottom: 1px solid #222; }
+th { color: #00d4ff; font-size: 0.85rem; text-transform: uppercase; }
+tr:hover { background: #1a1a1a; }
+.badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+.badge-green { background: #0d2818; color: #00d4ff; }
+.badge-yellow { background: #2a2a0a; color: #ffd400; }
+.badge-red { background: #2a0a0a; color: #ff4444; }
+a { color: #00d4ff; text-decoration: none; }
+.nav { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.nav a { padding: 0.5rem 1rem; background: #141414; border-radius: 8px; font-size: 0.9rem; }
+.footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #222; color: #666; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<div class="nav">
+  <a href="https://ziontechgroup.com">🏠 Zion Tech Group</a>
+  <a href="https://ziontechgroup.com/apps/">📱 Apps</a>
+  <a href="https://ziontechgroup.com/services/">🛠️ Services</a>
+  <a href="https://ziontechgroup.com/en/plans/">💰 Plans</a>
+</div>
+
+<h1>🤖 AI Model Cost Calculator</h1>
+<p class="subtitle">Compare pricing across OpenAI, Claude, Gemini, Llama, and Mistral models</p>
+
+<div class="card">
+  <h2>Your Usage</h2>
+  <div class="grid">
+    <div class="input-group">
+      <label>Monthly Tokens (millions)</label>
+      <input type="number" id="tokens" value="1" min="0.01" step="0.01">
+    </div>
+    <div class="input-group">
+      <label>Model Type</label>
+      <select id="modelType">
+        <option value="gpt">GPT-4 / GPT-4o</option>
+        <option value="claude">Claude 3.5 / 4</option>
+        <option value="gemini">Gemini 2.5 Pro</option>
+        <option value="llama">Llama 3.3 / 4</option>
+        <option value="mistral">Mistral Large</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label>API Calls / Month</label>
+      <input type="number" id="apiCalls" value="10000" min="1" step="1000">
+    </div>
+  </div>
+  <button onclick="calculate()">Calculate Cost</button>
+  <button onclick="compareAll()">Compare All Models</button>
+</div>
+
+<div id="results" class="result" style="display:none;">
+  <h3>💰 Cost Comparison</h3>
+  <div id="costTable"></div>
+  <h3>📊 Annual Projection</h3>
+  <div id="annualProjection"></div>
+  <h3>💡 Recommendation</h3>
+  <div id="recommendation"></div>
+</div>
+
+<div class="card">
+  <h2>Model Pricing Reference (per 1M tokens)</h2>
+  <table>
+    <tr><th>Model</th><th>Input</th><th>Output</th><th>Context</th></tr>
+    <tr><td>GPT-4o</td><td>$5.00</td><td>$15.00</td><td>128K</td></tr>
+    <tr><td>GPT-4 Turbo</td><td>$10.00</td><td>$30.00</td><td>128K</td></tr>
+    <tr><td>Claude 3.5 Sonnet</td><td>$3.00</td><td>$15.00</td><td>200K</td></tr>
+    <tr><td>Claude 3 Opus</td><td>$15.00</td><td>$75.00</td><td>200K</td></tr>
+    <tr><td>Gemini 2.5 Pro</td><td>$1.25</td><td>$10.00</td><td>1M</td></tr>
+    <tr><td>Llama 3.3 70B</td><td>$0.70</td><td>$2.50</td><td>128K</td></tr>
+    <tr><td>Mistral Large 2</td><td>$2.00</td><td>$6.00</td><td>128K</td></tr>
+  </table>
+</div>
+
+<div class="footer">
+  <p>Zion Tech Group · <a href="https://ziontechgroup.com/en/plans/">Plans from $99</a> · <a href="https://ziontechgroup.com/discovery/">Free Discovery</a></p>
+  <p>⭐ 99.97% SLA · 🔒 SOC 2 Compliant · ☎ +1 302 464 0950</p>
+</div>
+
+<script>
+const pricing = {
+  gpt: { name: 'GPT-4o', input: 5, output: 15, context: '128K' },
+  claude: { name: 'Claude 3.5 Sonnet', input: 3, output: 15, context: '200K' },
+  gemini: { name: 'Gemini 2.5 Pro', input: 1.25, output: 10, context: '1M' },
+  llama: { name: 'Llama 3.3 70B', input: 0.70, output: 2.50, context: '128K' },
+  mistral: { name: 'Mistral Large 2', input: 2, output: 6, context: '128K' }
+};
+
+function calculate() {
+  const tokens = parseFloat(document.getElementById('tokens').value) || 1;
+  const type = document.getElementById('modelType').value;
+  const calls = parseInt(document.getElementById('apiCalls').value) || 10000;
+  
+  const model = pricing[type];
+  const inputCost = (tokens * model.input).toFixed(2);
+  const outputCost = (tokens * model.output).toFixed(2);
+  const total = (parseFloat(inputCost) + parseFloat(outputCost)).toFixed(2);
+  const annual = (parseFloat(total) * 12).toFixed(2);
+  
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('costTable').innerHTML = `
+    <table>
+      <tr><th>Model</th><th>Input Cost</th><th>Output Cost</th><th>Total/Month</th></tr>
+      <tr><td><strong>${model.name}</strong></td><td>$${inputCost}</td><td>$${outputCost}</td><td><strong>$${total}</strong></td></tr>
+    </table>
+  `;
+  document.getElementById('annualProjection').innerHTML = `
+    <p>Annual cost: <strong>$${annual}</strong> (${model.name})</p>
+    <p>Based on ${tokens}M tokens/month and ${calls.toLocaleString()} API calls</p>
+  `;
+  
+  const cheapest = Object.entries(pricing).sort((a,b) => (a[1].input + a[1].output) - (b[1].input + b[1].output))[0];
+  document.getElementById('recommendation').innerHTML = `
+    <p><span class="badge badge-green">💡 Recommendation</span></p>
+    <p>For cost optimization, consider <strong>${cheapest[1].name}</strong> ($${(cheapest[1].input + cheapest[1].output).toFixed(2)}/M tokens)</p>
+    <p>For best performance, <strong>${model.name}</strong> offers the best quality-to-cost ratio.</p>
+  `;
+}
+
+function compareAll() {
+  const tokens = parseFloat(document.getElementById('tokens').value) || 1;
+  let html = '<table><tr><th>Model</th><th>Input</th><th>Output</th><th>Total/M</th><th>Monthly</th><th>Annual</th></tr>';
+  
+  Object.entries(pricing).forEach(([key, model]) => {
+    const monthly = (tokens * (model.input + model.output)).toFixed(2);
+    const annual = (monthly * 12).toFixed(2);
+    html += `<tr><td>${model.name}</td><td>$${model.input}</td><td>$${model.output}</td><td>$${(model.input + model.output).toFixed(2)}</td><td>$${monthly}</td><td>$${annual}</td></tr>`;
+  });
+  
+  html += '</table>';
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('costTable').innerHTML = html;
+  document.getElementById('annualProjection').innerHTML = '<p>Compare all models side-by-side above.</p>';
+  document.getElementById('recommendation').innerHTML = '<p>Use the <strong>Llama 3.3</strong> for lowest cost or <strong>Claude 3.5</strong> for best balance of quality and price.</p>';
+}
+</script>
+</body>
+</html>
